@@ -6,3 +6,18 @@ coverage
 *.log
 dist
 
+# macOS
+
+# Xcode
+DerivedData/
+build/
+*.xcworkspace
+xcuserdata/
+
+# Swift / general
+*.tmp
+
+# Node (for web repos)
+node_modules/
+.next/
+out/
