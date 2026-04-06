@@ -16,6 +16,7 @@ This repo currently provides:
 - protected cockpit JSON endpoints under `app/api/cockpit/*`
 - simple bearer-token protection via environment variable
 - static mock responses that match the current iOS app models
+- a summary data-source pipeline that supports `mock` and `real` source modes
 
 It intentionally does not include:
 
@@ -38,6 +39,10 @@ Current server-side support files:
 - `lib/cockpit/config.ts`
 - `lib/cockpit/mock-data.ts`
 - `lib/cockpit/types.ts`
+- `lib/cockpit/summary/types.ts`
+- `lib/cockpit/summary/mock-summary-source.ts`
+- `lib/cockpit/summary/real-summary-source.ts`
+- `lib/cockpit/summary/get-summary.ts`
 
 These endpoints are backend-agnostic by design. They only return JSON and do
 not embed any BigQuery-specific logic into the route layer.
@@ -57,6 +62,27 @@ If the bearer token is missing or invalid, the API returns `401`.
 If the server token is not configured at all, the API returns `500` with a
 clear JSON error explaining that configuration is missing.
 
+## Summary Source Selection
+
+`/api/cockpit/summary` now runs through a small source-selection pipeline.
+
+Supported modes:
+
+- `mock`
+- `real`
+
+Source mode is selected through:
+
+- `COCKPIT_SUMMARY_SOURCE=mock|real`
+
+Default behavior remains:
+
+- `mock`
+
+If `COCKPIT_SUMMARY_SOURCE=real` is selected but the expected BigQuery-related
+configuration is incomplete, the summary pipeline falls back to mock data while
+reporting the backend state through `/api/cockpit/health`.
+
 ## Mock Data
 
 All cockpit endpoints currently return static mock JSON shaped for the iOS app:
@@ -70,6 +96,21 @@ All cockpit endpoints currently return static mock JSON shaped for the iOS app:
 
 This keeps the mobile app fully testable while the protected backend is still
 being scaffolded.
+
+## Real Summary Scaffold
+
+The real summary path is intentionally only a scaffold in this step.
+
+Expected configuration for the next implementation phase:
+
+- `GOOGLE_CLOUD_PROJECT_ID`
+- `BIGQUERY_DATASET`
+- `BIGQUERY_SUMMARY_VIEW`
+- optional service-account-related configuration such as
+  `GOOGLE_SERVICE_ACCOUNT_EMAIL`
+
+The route layer does not contain SQL or BigQuery-specific logic. That future
+work belongs in `lib/cockpit/summary/real-summary-source.ts`.
 
 ## Next Backend Phase
 
@@ -116,6 +157,11 @@ npm run build
 Optional:
 
 - `COCKPIT_API_TIMEOUT_MS`
+- `COCKPIT_SUMMARY_SOURCE`
+- `GOOGLE_CLOUD_PROJECT_ID`
+- `BIGQUERY_DATASET`
+- `BIGQUERY_SUMMARY_VIEW`
+- `GOOGLE_SERVICE_ACCOUNT_EMAIL`
 
 ## Local API Testing
 
@@ -133,6 +179,31 @@ curl \
   http://localhost:3000/api/cockpit/summary
 ```
 
+Test default mock summary mode:
+
+```bash
+COCKPIT_SUMMARY_SOURCE=mock npm run dev
+```
+
+Test real summary scaffold mode with safe fallback:
+
+```bash
+COCKPIT_SUMMARY_SOURCE=real npm run dev
+```
+
+Then inspect health:
+
+```bash
+curl \
+  -H "Authorization: Bearer $COCKPIT_API_BEARER_TOKEN" \
+  http://localhost:3000/api/cockpit/health
+```
+
+In `real` mode without full BigQuery config, health will report:
+
+- `summarySourceMode: "real"`
+- `summaryBackendStatus: "real-not-configured"`
+
 ```bash
 curl \
   -H "Authorization: Bearer $COCKPIT_API_BEARER_TOKEN" \
@@ -148,6 +219,7 @@ curl \
 ## Notes
 
 - Public Planet2x pages are intentionally not part of this step.
-- The API layer is currently mock/static but ready for future protected JSON
-  integration.
+- The summary route now supports backend source selection while preserving the
+  same JSON response shape for the iOS app.
+- The API layer is still safe by default because mock mode remains the default.
 - The current structure is meant to grow carefully, not quickly.

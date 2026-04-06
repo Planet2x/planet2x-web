@@ -16,6 +16,7 @@ xcuserdata/
 
 # Swift / general
 *.tmp
+*.tsbuildinfo
 
 # Node (for web repos)
 node_modules/

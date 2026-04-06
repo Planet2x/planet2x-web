@@ -1,4 +1,14 @@
 const DEFAULT_TIMEOUT_MS = 15000;
+const DEFAULT_SUMMARY_SOURCE = "mock";
+
+export type CockpitSummarySourceMode = "mock" | "real";
+
+export type RealSummaryConfiguration = {
+  googleCloudProjectId: string | null;
+  bigQueryDataset: string | null;
+  bigQuerySummaryView: string | null;
+  googleServiceAccountEmail: string | null;
+};
 
 export function getCockpitBearerToken(): string | null {
   const token = process.env.COCKPIT_API_BEARER_TOKEN?.trim();
@@ -14,4 +24,28 @@ export function getCockpitRequestTimeoutMs(): number {
   }
 
   return parsed;
+}
+
+export function getCockpitSummarySourceMode(): CockpitSummarySourceMode {
+  const rawValue = process.env.COCKPIT_SUMMARY_SOURCE?.trim().toLowerCase();
+
+  if (rawValue === "real") {
+    return "real";
+  }
+
+  return DEFAULT_SUMMARY_SOURCE;
+}
+
+export function getRealSummaryConfiguration(): RealSummaryConfiguration {
+  return {
+    googleCloudProjectId: readOptionalEnv("GOOGLE_CLOUD_PROJECT_ID"),
+    bigQueryDataset: readOptionalEnv("BIGQUERY_DATASET"),
+    bigQuerySummaryView: readOptionalEnv("BIGQUERY_SUMMARY_VIEW"),
+    googleServiceAccountEmail: readOptionalEnv("GOOGLE_SERVICE_ACCOUNT_EMAIL"),
+  };
+}
+
+function readOptionalEnv(name: string): string | null {
+  const value = process.env[name]?.trim();
+  return value ? value : null;
 }

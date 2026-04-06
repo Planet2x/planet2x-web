@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { authorizeCockpitRequest } from "@/lib/cockpit/auth";
-import { getMockSummary } from "@/lib/cockpit/mock-data";
+import { getSummary } from "@/lib/cockpit/summary/get-summary";
 
 export async function GET(request: Request) {
   const unauthorizedResponse = authorizeCockpitRequest(request);
@@ -10,7 +10,7 @@ export async function GET(request: Request) {
     return unauthorizedResponse;
   }
 
-  return NextResponse.json(getMockSummary(), {
+  return NextResponse.json(await getSummary(), {
     headers: {
       "Cache-Control": "no-store",
     },

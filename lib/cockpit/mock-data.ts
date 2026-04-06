@@ -1,21 +1,7 @@
-import type {
-  DashboardSummary,
-  FunnelSnapshot,
-  HealthStatus,
-} from "@/lib/cockpit/types";
+import type { FunnelSnapshot, HealthStatus } from "@/lib/cockpit/types";
+import { getSummarySourceState } from "@/lib/cockpit/summary/get-summary";
 
 const game = "Liquid Path";
-
-export function getMockSummary(): DashboardSummary {
-  return {
-    generatedAt: "2026-04-06T18:20:00Z",
-    game,
-    activeUsers: 18240,
-    firstStepUsers: 13960,
-    finishUsers: 5210,
-    fallEvents: 24880,
-  };
-}
 
 export function getMockFunnel(): FunnelSnapshot {
   return {
@@ -52,11 +38,13 @@ export function getMockFunnel(): FunnelSnapshot {
 }
 
 export function getMockHealth(): HealthStatus {
+  const summaryState = getSummarySourceState();
+
   return {
     generatedAt: "2026-04-06T18:20:00Z",
     apiStatus: "Mock Static Mode",
     dataSource: "Local server mock data",
     notes:
-      "Protected cockpit endpoints are live in scaffold form. Replace mock data with real BigQuery-backed summaries in the next backend phase.",
+      `Summary source mode: ${summaryState.mode}. Summary backend status: ${summaryState.backendStatus}. ${summaryState.notes}`,
   };
 }
