@@ -1,12 +1,21 @@
 const DEFAULT_TIMEOUT_MS = 15000;
 const DEFAULT_SUMMARY_SOURCE = "mock";
+const DEFAULT_GAME_EVENTS_SOURCE = "mock";
 
 export type CockpitSummarySourceMode = "mock" | "real";
+export type CockpitGameEventsSourceMode = "mock" | "real";
 
 export type RealSummaryConfiguration = {
   googleCloudProjectId: string | null;
   bigQueryDataset: string | null;
   bigQuerySummaryView: string | null;
+  googleServiceAccountEmail: string | null;
+};
+
+export type RealGameEventsConfiguration = {
+  googleCloudProjectId: string | null;
+  bigQueryDataset: string | null;
+  bigQueryGameEventsView: string | null;
   googleServiceAccountEmail: string | null;
 };
 
@@ -36,11 +45,30 @@ export function getCockpitSummarySourceMode(): CockpitSummarySourceMode {
   return DEFAULT_SUMMARY_SOURCE;
 }
 
+export function getCockpitGameEventsSourceMode(): CockpitGameEventsSourceMode {
+  const rawValue = process.env.COCKPIT_GAME_EVENTS_SOURCE?.trim().toLowerCase();
+
+  if (rawValue === "real") {
+    return "real";
+  }
+
+  return DEFAULT_GAME_EVENTS_SOURCE;
+}
+
 export function getRealSummaryConfiguration(): RealSummaryConfiguration {
   return {
     googleCloudProjectId: readOptionalEnv("GOOGLE_CLOUD_PROJECT_ID"),
     bigQueryDataset: readOptionalEnv("BIGQUERY_DATASET"),
     bigQuerySummaryView: readOptionalEnv("BIGQUERY_SUMMARY_VIEW"),
+    googleServiceAccountEmail: readOptionalEnv("GOOGLE_SERVICE_ACCOUNT_EMAIL"),
+  };
+}
+
+export function getRealGameEventsConfiguration(): RealGameEventsConfiguration {
+  return {
+    googleCloudProjectId: readOptionalEnv("GOOGLE_CLOUD_PROJECT_ID"),
+    bigQueryDataset: readOptionalEnv("BIGQUERY_DATASET"),
+    bigQueryGameEventsView: readOptionalEnv("BIGQUERY_GAME_EVENTS_VIEW"),
     googleServiceAccountEmail: readOptionalEnv("GOOGLE_SERVICE_ACCOUNT_EMAIL"),
   };
 }

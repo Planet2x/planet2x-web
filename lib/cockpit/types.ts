@@ -24,4 +24,8 @@ export type HealthStatus = {
   apiStatus: string;
   dataSource: string;
   notes: string;
+  summarySourceMode?: "mock" | "real";
+  summaryBackendStatus?: string;
+  gameEventsSourceMode?: "mock" | "real";
+  gameEventsBackendStatus?: string;
 };

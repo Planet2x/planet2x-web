@@ -1,4 +1,5 @@
 import type { FunnelSnapshot, HealthStatus } from "@/lib/cockpit/types";
+import { getGameEventsSourceState } from "@/lib/cockpit/domains/game-events/get-game-events";
 import { getSummarySourceState } from "@/lib/cockpit/summary/get-summary";
 
 const game = "Liquid Path";
@@ -39,12 +40,17 @@ export function getMockFunnel(): FunnelSnapshot {
 
 export function getMockHealth(): HealthStatus {
   const summaryState = getSummarySourceState();
+  const gameEventsState = getGameEventsSourceState();
 
   return {
-    generatedAt: "2026-04-06T18:20:00Z",
-    apiStatus: "Mock Static Mode",
-    dataSource: "Local server mock data",
+    generatedAt: "2026-04-07T19:30:00Z",
+    apiStatus: "Protected operational JSON API",
+    dataSource: "Server mock data with source-selectable domain scaffolds",
     notes:
-      `Summary source mode: ${summaryState.mode}. Summary backend status: ${summaryState.backendStatus}. ${summaryState.notes}`,
+      `Summary: ${summaryState.backendStatus}. ${summaryState.notes} Game events: ${gameEventsState.backendStatus}. ${gameEventsState.notes}`,
+    summarySourceMode: summaryState.mode,
+    summaryBackendStatus: summaryState.backendStatus,
+    gameEventsSourceMode: gameEventsState.mode,
+    gameEventsBackendStatus: gameEventsState.backendStatus,
   };
 }
