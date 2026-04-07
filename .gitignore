@@ -22,3 +22,5 @@ xcuserdata/
 node_modules/
 .next/
 out/
+*.json
+!package-lock.json

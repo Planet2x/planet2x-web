@@ -28,4 +28,6 @@ export type HealthStatus = {
   summaryBackendStatus?: string;
   gameEventsSourceMode?: "mock" | "real";
   gameEventsBackendStatus?: string;
+  gameEventsProjectId?: string | null;
+  gameEventsDataset?: string | null;
 };

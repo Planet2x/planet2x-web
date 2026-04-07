@@ -19,12 +19,12 @@ This repo currently provides:
 - source-selection scaffolds for backend evolution without changing route shapes
 - a reusable domain-module pattern for future read-only cockpit domains such as
   Game Events, Sales, and Ads
+- a real BigQuery-backed game-events pipeline with controlled fallback to mock
 
 It intentionally does not include:
 
 - a public marketing site rebuild
 - authentication frameworks
-- BigQuery querying
 - a frontend dashboard
 
 ## Cockpit API Routes
@@ -52,6 +52,7 @@ Current domain support includes:
 
 - lib/cockpit/summary/*
 - lib/cockpit/domains/game-events/*
+- lib/cockpit/bigquery/client.ts
 
 The lib/cockpit/domains/<domain>/... pattern is intended to scale to future
 read-only operational domains such as:
@@ -91,11 +92,9 @@ Environment variables:
 
 Default behavior remains mock.
 
-For game-events, mock remains the safe default and also acts as a controlled
-fallback when real mode is selected without enough backend configuration. If
-real mode is selected with configuration present, health reports that the
-backend is ready for the next implementation step while the route continues to
-serve stable mock data until query execution is added.
+For game-events, real mode now works when local BigQuery config is present.
+If config is missing or the query fails, the endpoint logs the error and falls
+back to mock data while health reports the current backend state.
 
 ## Game Events Endpoint
 
@@ -121,6 +120,21 @@ Response shape:
 - quickRead
 - dailyOverview
 - progressionFunnel
+
+Real mode uses these BigQuery views:
+
+- v_lp_daily_overview_30d
+- v_lp_progression_funnel_7d
+
+The daily overview query reads the last 30 rows from the overview view.
+The progression funnel query reads ordered funnel rows from the 7-day view.
+Quick-read values are derived from those results on the server.
+
+Environment behavior in v1:
+
+- all uses the shared query results directly
+- xcode/testflight/appstore currently return the same real dataset
+- the filtering hook exists in code so environment-specific logic can be added later without changing the route shape
 
 Example response:
 
@@ -159,27 +173,34 @@ Example response:
 }
 ~~~
 
-Mock snapshots differ by environment so mobile and macOS clients can verify
-selector behavior visually during development.
+## BigQuery Client
 
-## Real Backend Scaffold
+The BigQuery client lives in:
 
-The real backend path is intentionally only a scaffold in this step.
+- lib/cockpit/bigquery/client.ts
 
-Expected configuration for the next implementation phase:
+It is initialized as a singleton and uses:
 
-- GOOGLE_CLOUD_PROJECT_ID
-- BIGQUERY_DATASET
-- BIGQUERY_SUMMARY_VIEW
-- BIGQUERY_GAME_EVENTS_VIEW
-- optional service-account-related configuration such as
-  GOOGLE_SERVICE_ACCOUNT_EMAIL
+- COCKPIT_GCP_PROJECT_ID for project selection
+- GOOGLE_APPLICATION_CREDENTIALS for local service-account auth
 
-The route layer does not contain SQL or BigQuery-specific logic. That future
-work belongs inside domain source modules such as:
+No credentials are stored in the repo. The backend relies on the standard
+Google client library behavior to load the JSON credentials file locally.
 
-- lib/cockpit/summary/real-summary-source.ts
-- lib/cockpit/domains/game-events/real-game-events-source.ts
+## Local Credential Configuration
+
+Add local values in .env.local:
+
+- COCKPIT_GAME_EVENTS_SOURCE=real
+- COCKPIT_GCP_PROJECT_ID=your-project-id
+- COCKPIT_BQ_DATASET=analytics_XXXXXXXX
+- GOOGLE_APPLICATION_CREDENTIALS=/absolute/path/to/service-account.json
+
+Important:
+
+- never commit real credentials
+- keep the service-account JSON outside the repo when possible
+- .gitignore now excludes JSON files to reduce accidental commits
 
 ## Health Endpoint
 
@@ -189,10 +210,12 @@ GET /api/cockpit/health reports compact operational backend state, including:
 - summaryBackendStatus
 - gameEventsSourceMode
 - gameEventsBackendStatus
+- gameEventsProjectId
+- gameEventsDataset
 - notes describing fallback or integration state
 
-This keeps clients informed when mock mode is active or when a real mode has
-been selected but is not fully implemented yet.
+This keeps clients informed when mock mode is active, when real mode is ready,
+or when the real query path failed and the API fell back to mock data.
 
 ## Local Development
 
@@ -237,6 +260,9 @@ Optional:
 - COCKPIT_API_TIMEOUT_MS
 - COCKPIT_SUMMARY_SOURCE
 - COCKPIT_GAME_EVENTS_SOURCE
+- COCKPIT_GCP_PROJECT_ID
+- COCKPIT_BQ_DATASET
+- GOOGLE_APPLICATION_CREDENTIALS
 - GOOGLE_CLOUD_PROJECT_ID
 - BIGQUERY_DATASET
 - BIGQUERY_SUMMARY_VIEW
@@ -253,21 +279,15 @@ Unauthorized check:
 curl http://localhost:3000/api/cockpit/game-events
 ~~~
 
-Authorized summary check:
+Authorized game-events check:
 
 ~~~bash
 curl \
   -H "Authorization: Bearer $COCKPIT_API_BEARER_TOKEN" \
-  http://localhost:3000/api/cockpit/summary
+  "http://localhost:3000/api/cockpit/game-events"
 ~~~
 
-Authorized game-events checks:
-
-~~~bash
-curl \
-  -H "Authorization: Bearer $COCKPIT_API_BEARER_TOKEN" \
-  http://localhost:3000/api/cockpit/game-events
-~~~
+Authorized game-events with environment:
 
 ~~~bash
 curl \
@@ -275,32 +295,24 @@ curl \
   "http://localhost:3000/api/cockpit/game-events?environment=appstore"
 ~~~
 
-Invalid environment check:
+Inspect health:
 
 ~~~bash
 curl \
   -H "Authorization: Bearer $COCKPIT_API_BEARER_TOKEN" \
-  "http://localhost:3000/api/cockpit/game-events?environment=staging"
+  "http://localhost:3000/api/cockpit/health"
 ~~~
 
 Mock mode testing:
 
 ~~~bash
-COCKPIT_SUMMARY_SOURCE=mock COCKPIT_GAME_EVENTS_SOURCE=mock npm run dev
+COCKPIT_GAME_EVENTS_SOURCE=mock npm run dev
 ~~~
 
-Game-events real scaffold testing:
+Real mode testing:
 
 ~~~bash
 COCKPIT_GAME_EVENTS_SOURCE=real npm run dev
-~~~
-
-Then inspect health:
-
-~~~bash
-curl \
-  -H "Authorization: Bearer $COCKPIT_API_BEARER_TOKEN" \
-  http://localhost:3000/api/cockpit/health
 ~~~
 
 ## Notes

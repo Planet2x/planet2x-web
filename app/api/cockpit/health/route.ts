@@ -23,6 +23,8 @@ export async function GET(request: Request) {
       summaryBackendStatus: summaryState.backendStatus,
       gameEventsSourceMode: gameEventsState.mode,
       gameEventsBackendStatus: gameEventsState.backendStatus,
+      gameEventsProjectId: gameEventsState.projectId ?? null,
+      gameEventsDataset: gameEventsState.dataset ?? null,
     },
     {
       headers: {

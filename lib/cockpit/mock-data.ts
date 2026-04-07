@@ -43,7 +43,7 @@ export function getMockHealth(): HealthStatus {
   const gameEventsState = getGameEventsSourceState();
 
   return {
-    generatedAt: "2026-04-07T19:30:00Z",
+    generatedAt: new Date().toISOString(),
     apiStatus: "Protected operational JSON API",
     dataSource: "Server mock data with source-selectable domain scaffolds",
     notes:
@@ -52,5 +52,7 @@ export function getMockHealth(): HealthStatus {
     summaryBackendStatus: summaryState.backendStatus,
     gameEventsSourceMode: gameEventsState.mode,
     gameEventsBackendStatus: gameEventsState.backendStatus,
+    gameEventsProjectId: gameEventsState.projectId ?? null,
+    gameEventsDataset: gameEventsState.dataset ?? null,
   };
 }

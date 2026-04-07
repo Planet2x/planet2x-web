@@ -15,8 +15,7 @@ export type RealSummaryConfiguration = {
 export type RealGameEventsConfiguration = {
   googleCloudProjectId: string | null;
   bigQueryDataset: string | null;
-  bigQueryGameEventsView: string | null;
-  googleServiceAccountEmail: string | null;
+  googleApplicationCredentials: string | null;
 };
 
 export function getCockpitBearerToken(): string | null {
@@ -66,10 +65,14 @@ export function getRealSummaryConfiguration(): RealSummaryConfiguration {
 
 export function getRealGameEventsConfiguration(): RealGameEventsConfiguration {
   return {
-    googleCloudProjectId: readOptionalEnv("GOOGLE_CLOUD_PROJECT_ID"),
-    bigQueryDataset: readOptionalEnv("BIGQUERY_DATASET"),
-    bigQueryGameEventsView: readOptionalEnv("BIGQUERY_GAME_EVENTS_VIEW"),
-    googleServiceAccountEmail: readOptionalEnv("GOOGLE_SERVICE_ACCOUNT_EMAIL"),
+    googleCloudProjectId:
+      readOptionalEnv("COCKPIT_GCP_PROJECT_ID") ??
+      readOptionalEnv("GOOGLE_CLOUD_PROJECT_ID"),
+    bigQueryDataset:
+      readOptionalEnv("COCKPIT_BQ_DATASET") ?? readOptionalEnv("BIGQUERY_DATASET"),
+    googleApplicationCredentials: readOptionalEnv(
+      "GOOGLE_APPLICATION_CREDENTIALS",
+    ),
   };
 }
 
