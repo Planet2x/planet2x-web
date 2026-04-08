@@ -12,11 +12,11 @@ import type {
 const GAME = "Liquid Path";
 
 type BigQueryDailyOverviewRow = {
-  date: string | Date | { value: string };
+  event_date: string | Date | { value: string };
   active_users: number | string;
-  first_step: number | string;
-  finish: number | string;
-  falls: number | string;
+  first_step_events: number | string;
+  finish_events: number | string;
+  fall_events: number | string;
 };
 
 type BigQueryProgressionRow = {
@@ -63,23 +63,25 @@ export class RealGameEventsSource implements GameEventsSource {
   ): Promise<GameEventsDailyOverviewRow[]> {
     const rows = await runQuery<BigQueryDailyOverviewRow>(`
       SELECT
-        date,
+        event_date,
+        app_env,
+        build_channel,
         active_users,
-        first_step,
-        finish,
-        falls
+        first_step_events,
+        finish_events,
+        fall_events
       FROM \`${this.configuration.googleCloudProjectId}.${this.configuration.bigQueryDataset}.v_lp_daily_overview_30d\`
       ${environmentWhereClause(environment)}
-      ORDER BY date DESC
+      ORDER BY event_date DESC
       LIMIT 30
     `);
 
     return rows.map((row) => ({
-      date: normalizeDate(row.date),
+      date: normalizeDate(row.event_date),
       activeUsers: normalizeNumber(row.active_users),
-      firstStep: normalizeNumber(row.first_step),
-      finish: normalizeNumber(row.finish),
-      falls: normalizeNumber(row.falls),
+      firstStep: normalizeNumber(row.first_step_events),
+      finish: normalizeNumber(row.finish_events),
+      falls: normalizeNumber(row.fall_events),
     }));
   }
 
