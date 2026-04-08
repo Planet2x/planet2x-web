@@ -21,8 +21,10 @@ type BigQueryDailyOverviewRow = {
 
 type BigQueryProgressionRow = {
   step: string;
-  runs_reached: number | string;
-  progress: number | string;
+  ord: number | string;
+  users?: number | string;
+  runs_reached?: number | string;
+  conversion_rate?: number | string;
 };
 
 export class RealGameEventsSource implements GameEventsSource {
@@ -91,17 +93,26 @@ export class RealGameEventsSource implements GameEventsSource {
     const rows = await runQuery<BigQueryProgressionRow>(`
       SELECT
         step,
-        runs_reached,
-        progress
+        ord,
+        users
       FROM \`${this.configuration.googleCloudProjectId}.${this.configuration.bigQueryDataset}.v_lp_progression_funnel_7d\`
       ${environmentWhereClause(environment)}
-      ORDER BY step_order ASC
+      ORDER BY ord ASC
     `);
 
-    return rows.map((row) => ({
+    const normalizedRows = rows.map((row) => ({
       step: toProgressionStepLabel(row.step),
-      runsReached: normalizeNumber(row.runs_reached),
-      progress: normalizeFloat(row.progress),
+      ord: normalizeNumber(row.ord),
+      runsReached: normalizeNumber(row.runs_reached ?? row.users ?? 0),
+    }));
+
+    const firstStepRuns = normalizedRows[0]?.runsReached ?? 0;
+
+    return normalizedRows.map((row) => ({
+      step: row.step,
+      runsReached: row.runsReached,
+      progress:
+        firstStepRuns > 0 ? row.runsReached / firstStepRuns : 0,
     }));
   }
 }
@@ -168,14 +179,6 @@ function toProgressionStepLabel(step: string): string {
 }
 
 function normalizeNumber(value: number | string): number {
-  if (typeof value === "number") {
-    return value;
-  }
-
-  return Number(value) || 0;
-}
-
-function normalizeFloat(value: number | string): number {
   if (typeof value === "number") {
     return value;
   }
