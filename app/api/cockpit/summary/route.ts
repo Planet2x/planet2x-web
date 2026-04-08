@@ -2,6 +2,10 @@ import { NextResponse } from "next/server";
 
 import { authorizeCockpitRequest } from "@/lib/cockpit/auth";
 import { getSummary } from "@/lib/cockpit/summary/get-summary";
+import {
+  isGameEventsEnvironment,
+  type GameEventsEnvironment,
+} from "@/lib/cockpit/domains/game-events/types";
 
 export async function GET(request: Request) {
   const unauthorizedResponse = authorizeCockpitRequest(request);
@@ -10,9 +14,31 @@ export async function GET(request: Request) {
     return unauthorizedResponse;
   }
 
-  return NextResponse.json(await getSummary(), {
-    headers: {
-      "Cache-Control": "no-store",
+  const url = new URL(request.url);
+  const environmentParam =
+    url.searchParams.get("environment")?.trim().toLowerCase() ?? "all";
+
+  if (!isGameEventsEnvironment(environmentParam)) {
+    return NextResponse.json(
+      {
+        error:
+          "Invalid environment query parameter. Expected one of: all, xcode, testflight, appstore.",
+      },
+      {
+        status: 400,
+        headers: {
+          "Cache-Control": "no-store",
+        },
+      },
+    );
+  }
+
+  return NextResponse.json(
+    await getSummary(environmentParam as GameEventsEnvironment),
+    {
+      headers: {
+        "Cache-Control": "no-store",
+      },
     },
-  });
+  );
 }

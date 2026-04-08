@@ -1,5 +1,6 @@
 import type { DashboardSummary } from "@/lib/cockpit/types";
 import type { CockpitSummarySourceMode } from "@/lib/cockpit/config";
+import type { GameEventsEnvironment } from "@/lib/cockpit/domains/game-events/types";
 
 export type SummaryBackendStatus =
   | "mock"
@@ -33,5 +34,5 @@ export type SummarySourceState = {
 };
 
 export type SummarySource = {
-  getSummary(): Promise<DashboardSummary>;
+  getSummary(environment: GameEventsEnvironment): Promise<DashboardSummary>;
 };

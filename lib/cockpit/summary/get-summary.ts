@@ -2,6 +2,7 @@ import {
   getCockpitSummarySourceMode,
   getRealSummaryConfiguration,
 } from "@/lib/cockpit/config";
+import type { GameEventsEnvironment } from "@/lib/cockpit/domains/game-events/types";
 import { MockSummarySource } from "@/lib/cockpit/summary/mock-summary-source";
 import { RealSummarySource } from "@/lib/cockpit/summary/real-summary-source";
 import type {
@@ -13,11 +14,13 @@ import type { DashboardSummary } from "@/lib/cockpit/types";
 
 let lastObservedState: SummarySourceState | null = null;
 
-export async function getSummary(): Promise<DashboardSummaryResponse> {
+export async function getSummary(
+  environment: GameEventsEnvironment,
+): Promise<DashboardSummaryResponse> {
   const resolved = resolveSummarySource();
 
   if (resolved.state.backendStatus === "mock") {
-    const summary = await resolved.source.getSummary();
+    const summary = await resolved.source.getSummary(environment);
     const response = withSourceMetadata(summary, {
       sourceUsed: "mock",
       backendStatus: "mock",
@@ -35,7 +38,7 @@ export async function getSummary(): Promise<DashboardSummaryResponse> {
   }
 
   if (resolved.state.backendStatus === "real-not-configured") {
-    const summary = await resolved.fallbackSource.getSummary();
+    const summary = await resolved.fallbackSource.getSummary(environment);
     const response = withSourceMetadata(summary, {
       sourceUsed: "mock",
       backendStatus: "real-not-configured",
@@ -55,7 +58,7 @@ export async function getSummary(): Promise<DashboardSummaryResponse> {
   }
 
   try {
-    const summary = await resolved.source.getSummary();
+    const summary = await resolved.source.getSummary(environment);
     const response = withSourceMetadata(summary, {
       sourceUsed: "real",
       backendStatus: "real-success",
@@ -85,7 +88,7 @@ export async function getSummary(): Promise<DashboardSummaryResponse> {
       dataset: resolved.state.dataset,
     };
 
-    const summary = await resolved.fallbackSource.getSummary();
+    const summary = await resolved.fallbackSource.getSummary(environment);
     const response = withSourceMetadata(summary, {
       sourceUsed: "mock",
       backendStatus: "real-error",
