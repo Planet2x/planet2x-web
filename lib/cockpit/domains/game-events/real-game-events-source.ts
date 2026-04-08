@@ -44,7 +44,7 @@ export class RealGameEventsSource implements GameEventsSource {
       );
     }
 
-    const dailyOverview = await this.fetchDailyOverview();
+    const dailyOverview = await this.fetchDailyOverview(environment);
     const progressionFunnel = await this.fetchProgressionFunnel(environment);
     const quickRead = buildQuickRead(dailyOverview, progressionFunnel);
 
@@ -58,7 +58,9 @@ export class RealGameEventsSource implements GameEventsSource {
     };
   }
 
-  private async fetchDailyOverview(): Promise<GameEventsDailyOverviewRow[]> {
+  private async fetchDailyOverview(
+    environment: GameEventsEnvironment,
+  ): Promise<GameEventsDailyOverviewRow[]> {
     const rows = await runQuery<BigQueryDailyOverviewRow>(`
       SELECT
         date,
@@ -67,6 +69,7 @@ export class RealGameEventsSource implements GameEventsSource {
         finish,
         falls
       FROM \`${this.configuration.googleCloudProjectId}.${this.configuration.bigQueryDataset}.v_lp_daily_overview_30d\`
+      ${environmentWhereClause(environment)}
       ORDER BY date DESC
       LIMIT 30
     `);
@@ -89,17 +92,15 @@ export class RealGameEventsSource implements GameEventsSource {
         runs_reached,
         progress
       FROM \`${this.configuration.googleCloudProjectId}.${this.configuration.bigQueryDataset}.v_lp_progression_funnel_7d\`
+      ${environmentWhereClause(environment)}
       ORDER BY step_order ASC
     `);
 
-    return applyEnvironmentFilter(
-      rows.map((row) => ({
-        step: toProgressionStepLabel(row.step),
-        runsReached: normalizeNumber(row.runs_reached),
-        progress: normalizeFloat(row.progress),
-      })),
-      environment,
-    );
+    return rows.map((row) => ({
+      step: toProgressionStepLabel(row.step),
+      runsReached: normalizeNumber(row.runs_reached),
+      progress: normalizeFloat(row.progress),
+    }));
   }
 }
 
@@ -125,15 +126,17 @@ function buildQuickRead(
   };
 }
 
-function applyEnvironmentFilter(
-  rows: GameEventsProgressionRow[],
-  environment: GameEventsEnvironment,
-): GameEventsProgressionRow[] {
-  // v1 keeps the same query results for every non-all environment. This hook
-  // exists so environment-specific filtering can be added later without
-  // changing the route or response shape.
-  void environment;
-  return rows;
+function environmentWhereClause(environment: GameEventsEnvironment): string {
+  switch (environment) {
+    case "all":
+      return "";
+    case "xcode":
+      return "WHERE app_env = 'dev' AND build_channel = 'xcode'";
+    case "testflight":
+      return "WHERE app_env = 'test' AND build_channel = 'testflight'";
+    case "appstore":
+      return "WHERE app_env = 'prod' AND build_channel = 'appstore'";
+  }
 }
 
 function toProgressionStepLabel(step: string): string {
