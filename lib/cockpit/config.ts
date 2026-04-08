@@ -10,6 +10,7 @@ export type RealSummaryConfiguration = {
   bigQueryDataset: string | null;
   bigQuerySummaryView: string | null;
   googleServiceAccountEmail: string | null;
+  googleApplicationCredentials: string | null;
 };
 
 export type RealGameEventsConfiguration = {
@@ -56,10 +57,17 @@ export function getCockpitGameEventsSourceMode(): CockpitGameEventsSourceMode {
 
 export function getRealSummaryConfiguration(): RealSummaryConfiguration {
   return {
-    googleCloudProjectId: readOptionalEnv("GOOGLE_CLOUD_PROJECT_ID"),
-    bigQueryDataset: readOptionalEnv("BIGQUERY_DATASET"),
-    bigQuerySummaryView: readOptionalEnv("BIGQUERY_SUMMARY_VIEW"),
+    googleCloudProjectId:
+      readOptionalEnv("COCKPIT_GCP_PROJECT_ID") ??
+      readOptionalEnv("GOOGLE_CLOUD_PROJECT_ID"),
+    bigQueryDataset:
+      readOptionalEnv("COCKPIT_BQ_DATASET") ?? readOptionalEnv("BIGQUERY_DATASET"),
+    bigQuerySummaryView:
+      readOptionalEnv("BIGQUERY_SUMMARY_VIEW") ?? "v_lp_daily_overview_30d",
     googleServiceAccountEmail: readOptionalEnv("GOOGLE_SERVICE_ACCOUNT_EMAIL"),
+    googleApplicationCredentials: readOptionalEnv(
+      "GOOGLE_APPLICATION_CREDENTIALS",
+    ),
   };
 }
 

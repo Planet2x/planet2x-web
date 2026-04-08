@@ -21,6 +21,12 @@ export async function GET(request: Request) {
       ...health,
       summarySourceMode: summaryState.mode,
       summaryBackendStatus: summaryState.backendStatus,
+      summaryLastResponseStatus: summaryState.lastResponseStatus ?? null,
+      summaryLastSourceUsed: summaryState.lastSourceUsed ?? null,
+      summaryLastBackendNote: summaryState.lastBackendNote ?? null,
+      summaryProjectId: summaryState.projectId ?? null,
+      summaryDataset: summaryState.dataset ?? null,
+      summaryNotes: summaryState.notes,
       gameEventsSourceMode: gameEventsState.mode,
       gameEventsBackendStatus: gameEventsState.backendStatus,
       gameEventsLastResponseStatus:
