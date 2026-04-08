@@ -94,7 +94,7 @@ export class RealGameEventsSource implements GameEventsSource {
 
     return applyEnvironmentFilter(
       rows.map((row) => ({
-        step: row.step,
+        step: toProgressionStepLabel(row.step),
         runsReached: normalizeNumber(row.runs_reached),
         progress: normalizeFloat(row.progress),
       })),
@@ -134,6 +134,32 @@ function applyEnvironmentFilter(
   // changing the route or response shape.
   void environment;
   return rows;
+}
+
+function toProgressionStepLabel(step: string): string {
+  const trimmedStep = step.trim();
+  if (trimmedStep.length === 0) {
+    return "—";
+  }
+
+  if (trimmedStep === "lp_first_step") {
+    return "First Step";
+  }
+
+  if (trimmedStep === "lp_planet2x_reach") {
+    return "Planet2x";
+  }
+
+  const midMatch = trimmedStep.match(/^lp_mid(\d+)_reach$/);
+  if (midMatch) {
+    return `Mid ${midMatch[1]}`;
+  }
+
+  return trimmedStep
+    .replace(/^lp_/, "")
+    .replace(/_reach$/, "")
+    .replace(/_/g, " ")
+    .replace(/\b\w/g, (character) => character.toUpperCase());
 }
 
 function normalizeNumber(value: number | string): number {
