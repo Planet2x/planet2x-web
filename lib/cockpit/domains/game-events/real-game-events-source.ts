@@ -22,9 +22,7 @@ type BigQueryDailyOverviewRow = {
 type BigQueryProgressionRow = {
   step: string;
   ord: number | string;
-  users?: number | string;
-  runs_reached?: number | string;
-  conversion_rate?: number | string;
+  runs_reached: number | string;
 };
 
 export class RealGameEventsSource implements GameEventsSource {
@@ -94,7 +92,9 @@ export class RealGameEventsSource implements GameEventsSource {
       SELECT
         step,
         ord,
-        users
+        app_env,
+        build_channel,
+        runs_reached
       FROM \`${this.configuration.googleCloudProjectId}.${this.configuration.bigQueryDataset}.v_lp_progression_funnel_7d\`
       ${environmentWhereClause(environment)}
       ORDER BY ord ASC
@@ -103,7 +103,7 @@ export class RealGameEventsSource implements GameEventsSource {
     const normalizedRows = rows.map((row) => ({
       step: toProgressionStepLabel(row.step),
       ord: normalizeNumber(row.ord),
-      runsReached: normalizeNumber(row.runs_reached ?? row.users ?? 0),
+      runsReached: normalizeNumber(row.runs_reached),
     }));
 
     const firstStepRuns = normalizedRows[0]?.runsReached ?? 0;
