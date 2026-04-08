@@ -43,12 +43,29 @@ export type GameEventsBackendStatus =
   | "real-ready"
   | "real-error";
 
+export type GameEventsResponseStatus =
+  | "mock"
+  | "real-success"
+  | "real-not-configured"
+  | "real-error";
+
+export type GameEventsSourceUsed = "mock" | "real";
+
+export type GameEventsResponse = GameEventsSnapshot & {
+  sourceUsed: GameEventsSourceUsed;
+  backendStatus: GameEventsResponseStatus;
+  backendNote: string;
+};
+
 export type GameEventsSourceState = {
   mode: "mock" | "real";
   backendStatus: GameEventsBackendStatus;
   notes: string;
   projectId?: string | null;
   dataset?: string | null;
+  lastResponseStatus?: GameEventsResponseStatus;
+  lastSourceUsed?: GameEventsSourceUsed;
+  lastBackendNote?: string;
 };
 
 export interface GameEventsSource {

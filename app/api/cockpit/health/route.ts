@@ -23,8 +23,13 @@ export async function GET(request: Request) {
       summaryBackendStatus: summaryState.backendStatus,
       gameEventsSourceMode: gameEventsState.mode,
       gameEventsBackendStatus: gameEventsState.backendStatus,
+      gameEventsLastResponseStatus:
+        gameEventsState.lastResponseStatus ?? null,
+      gameEventsLastSourceUsed: gameEventsState.lastSourceUsed ?? null,
+      gameEventsLastBackendNote: gameEventsState.lastBackendNote ?? null,
       gameEventsProjectId: gameEventsState.projectId ?? null,
       gameEventsDataset: gameEventsState.dataset ?? null,
+      gameEventsNotes: gameEventsState.notes,
     },
     {
       headers: {

@@ -6,6 +6,7 @@ import { MockGameEventsSource } from "@/lib/cockpit/domains/game-events/mock-gam
 import { RealGameEventsSource } from "@/lib/cockpit/domains/game-events/real-game-events-source";
 import type {
   GameEventsEnvironment,
+  GameEventsResponse,
   GameEventsSnapshot,
   GameEventsSource,
   GameEventsSourceState,
@@ -15,27 +16,68 @@ let lastObservedState: GameEventsSourceState | null = null;
 
 export async function getGameEvents(
   environment: GameEventsEnvironment,
-): Promise<GameEventsSnapshot> {
+): Promise<GameEventsResponse> {
   const resolved = resolveGameEventsSource();
 
   if (resolved.state.backendStatus === "mock") {
-    lastObservedState = resolved.state;
-    return resolved.source.getGameEvents(environment);
+    const snapshot = await resolved.source.getGameEvents(environment);
+    const response = withSourceMetadata(snapshot, {
+      sourceUsed: "mock",
+      backendStatus: "mock",
+      backendNote: "Mock game-events mode is active.",
+    });
+
+    lastObservedState = {
+      ...resolved.state,
+      lastResponseStatus: response.backendStatus,
+      lastSourceUsed: response.sourceUsed,
+      lastBackendNote: response.backendNote,
+    };
+
+    return response;
   }
 
   if (resolved.state.backendStatus === "real-not-configured") {
-    lastObservedState = resolved.state;
-    return resolved.fallbackSource.getGameEvents(environment);
+    const snapshot = await resolved.fallbackSource.getGameEvents(environment);
+    const response = withSourceMetadata(snapshot, {
+      sourceUsed: "mock",
+      backendStatus: "real-not-configured",
+      backendNote:
+        "Real game-events mode is selected, but BigQuery configuration is incomplete. Serving mock fallback data.",
+    });
+
+    lastObservedState = {
+      ...resolved.state,
+      notes: response.backendNote,
+      lastResponseStatus: response.backendStatus,
+      lastSourceUsed: response.sourceUsed,
+      lastBackendNote: response.backendNote,
+    };
+
+    return response;
   }
 
   try {
     const snapshot = await resolved.source.getGameEvents(environment);
-    lastObservedState = resolved.state;
-    return snapshot;
+    const response = withSourceMetadata(snapshot, {
+      sourceUsed: "real",
+      backendStatus: "real-success",
+      backendNote: "Real BigQuery game-events data returned successfully.",
+    });
+
+    lastObservedState = {
+      ...resolved.state,
+      notes: response.backendNote,
+      lastResponseStatus: response.backendStatus,
+      lastSourceUsed: response.sourceUsed,
+      lastBackendNote: response.backendNote,
+    };
+
+    return response;
   } catch (error) {
     console.error("[cockpit] real game-events query failed", error);
 
-    lastObservedState = {
+    const fallbackState: GameEventsSourceState = {
       mode: "real",
       backendStatus: "real-error",
       notes:
@@ -46,7 +88,21 @@ export async function getGameEvents(
       dataset: resolved.state.dataset,
     };
 
-    return resolved.fallbackSource.getGameEvents(environment);
+    const snapshot = await resolved.fallbackSource.getGameEvents(environment);
+    const response = withSourceMetadata(snapshot, {
+      sourceUsed: "mock",
+      backendStatus: "real-error",
+      backendNote: fallbackState.notes,
+    });
+
+    lastObservedState = {
+      ...fallbackState,
+      lastResponseStatus: response.backendStatus,
+      lastSourceUsed: response.sourceUsed,
+      lastBackendNote: response.backendNote,
+    };
+
+    return response;
   }
 }
 
@@ -109,5 +165,18 @@ function resolveGameEventsSource(): {
       projectId: configuration.googleCloudProjectId,
       dataset: configuration.bigQueryDataset,
     },
+  };
+}
+
+function withSourceMetadata(
+  snapshot: GameEventsSnapshot,
+  metadata: Pick<
+    GameEventsResponse,
+    "sourceUsed" | "backendStatus" | "backendNote"
+  >,
+): GameEventsResponse {
+  return {
+    ...snapshot,
+    ...metadata,
   };
 }
