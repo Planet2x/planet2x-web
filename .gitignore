@@ -24,3 +24,9 @@ node_modules/
 out/
 *.json
 !package-lock.json
+GoogleService-Info.plist
+google-services.json
+.env
+.env.*
+*.secret
+*.key

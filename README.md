@@ -27,6 +27,20 @@ be treated as a required production dependency for the current cockpit runtime.
 
 ---
 
+## Local configuration
+
+This project uses local-only config files.
+
+Do not commit:
+- `GoogleService-Info.plist`
+- `.env` files
+
+Setup:
+1. Copy the relevant template file such as `.env.example`
+2. Fill it with your own credentials
+
+---
+
 planet2x-web previously served as the protected operational API foundation for
 Planet2x Cockpit clients.
 
