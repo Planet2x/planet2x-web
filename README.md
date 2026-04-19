@@ -1,7 +1,34 @@
 # planet2x-web
 
-planet2x-web is currently being used as the protected operational API
-foundation for Planet2x Cockpit clients.
+## Status
+
+`DORMANT / PARKED`
+
+This repository is not part of the current active runtime path for Planet2x
+Cockpit clients.
+
+Current active runtime path:
+
+- `planet2x-cloud-worker` writes snapshot JSON files to Google Cloud Storage
+- `planet2x-cockpit-ios` reads public snapshot JSON directly over HTTPS from GCS
+- `planet2x-cockpit` reads direct BigQuery data and/or public GCS snapshots
+
+Historical role:
+
+- authenticated Next.js API layer prototype for cockpit clients
+
+Future role:
+
+- optional authenticated gateway layer if private or authenticated cockpit
+  access is needed later
+
+This repository is intentionally retained as a future option, but it should not
+be treated as a required production dependency for the current cockpit runtime.
+
+---
+
+planet2x-web previously served as the protected operational API foundation for
+Planet2x Cockpit clients.
 
 The public Planet2x site remains in Framer for now. This repo is not being used
 to recreate the public website in this step. The current priority is a small,
@@ -9,6 +36,12 @@ Vercel-friendly Next.js App Router backend that serves protected JSON endpoints
 to mobile and macOS cockpit clients.
 
 ## Current Scope
+
+Dormant note:
+
+- the code in this repository is currently parked and not used by active
+  cockpit clients
+- keep it intact as a future authenticated gateway option
 
 This repo currently provides:
 

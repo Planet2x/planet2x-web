@@ -1,5 +1,16 @@
 # Architecture
 
+Status: `DORMANT / PARKED`
+
+This repo is not part of the current active cockpit runtime path.
+
+Active runtime path:
+
+- `planet2x-cloud-worker -> GCS snapshots -> cockpit clients`
+
+Keep this repo as a future authenticated gateway option if private access is
+needed later.
+
 Use this space for the site-level technical picture:
 
 - routing structure
@@ -10,4 +21,3 @@ Use this space for the site-level technical picture:
 
 Keep the notes practical. Capture why the system is shaped the way it is, not
 just what folders exist.
-
