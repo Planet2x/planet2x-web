@@ -1,13 +1,14 @@
 import Link from "next/link";
 
+import { SiteLogo } from "@/components/site-logo";
 import { SocialLinks } from "@/components/social-links";
 
 export function SiteHeader() {
   return (
     <header className="flex flex-wrap items-center justify-between gap-4 border-b border-[var(--border)] pb-5">
       <div className="flex items-center gap-6">
-        <Link className="text-sm font-medium uppercase tracking-[0.28em] text-[var(--foreground)]" href="/">
-          Planet2x
+        <Link className="shrink-0" href="/">
+          <SiteLogo />
         </Link>
         <nav className="hidden items-center gap-5 text-sm text-[var(--soft-foreground)] sm:flex">
           <Link className="transition hover:text-[var(--foreground)]" href="/">

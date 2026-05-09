@@ -6,6 +6,12 @@ import { SocialLinks } from "@/components/social-links";
 import { WorkVisualSection } from "@/components/work-visual-section";
 import { getFrontmatterText, getPageBySlug, getWorkEntries } from "@/lib/content";
 
+const homepageWorkOrder = [
+  "lumen-path",
+  "liquid-path",
+  "big-and-little-magic-journey",
+] as const;
+
 export default async function HomePage() {
   const [homePage, aboutPage, works] = await Promise.all([
     getPageBySlug("home"),
@@ -14,6 +20,10 @@ export default async function HomePage() {
   ]);
 
   const studioStillImage = getFrontmatterText(homePage.frontmatter, "studioStillImage");
+  const worksBySlug = new Map(works.map((work) => [work.slug, work]));
+  const orderedWorks = homepageWorkOrder
+    .map((slug) => worksBySlug.get(slug))
+    .filter((work) => work !== undefined);
 
   return (
     <main
@@ -27,7 +37,7 @@ export default async function HomePage() {
       </div>
 
       <div className="border-t border-[var(--divider)]">
-        {works.map((work, index) => (
+        {orderedWorks.map((work, index) => (
           <WorkVisualSection key={work.slug} priority={index === 0} work={work} />
         ))}
       </div>
