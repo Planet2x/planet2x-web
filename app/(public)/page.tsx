@@ -32,13 +32,24 @@ export default async function HomePage() {
     >
       <div className="absolute inset-x-0 top-0 -z-10 h-[28rem] bg-[radial-gradient(circle_at_top,rgba(119,241,255,0.16),transparent_32%),radial-gradient(circle_at_75%_12%,rgba(125,93,255,0.12),transparent_26%)]" />
 
-      <div className="mx-auto max-w-7xl px-6 py-6 sm:px-8 lg:px-10">
-        <SiteHeader />
-      </div>
+      <div className="relative">
+        <div className="absolute inset-x-0 top-0 z-30">
+          <div className="mx-auto max-w-7xl px-6 sm:px-8 lg:px-10">
+            <SiteHeader overlay />
+          </div>
+          <div
+            aria-hidden="true"
+            className="h-24 bg-[linear-gradient(180deg,rgba(4,6,10,0.55),rgba(4,6,10,0.18),transparent)]"
+          />
+        </div>
 
-      <div className="border-t border-[var(--divider)]">
         {orderedWorks.map((work, index) => (
-          <WorkVisualSection key={work.slug} priority={index === 0} work={work} />
+          <WorkVisualSection
+            first={index === 0}
+            key={work.slug}
+            priority={index === 0}
+            work={work}
+          />
         ))}
       </div>
 

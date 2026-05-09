@@ -4,6 +4,7 @@ import type { ContentEntry } from "@/lib/content";
 import { getFrontmatterText } from "@/lib/content";
 
 type WorkVisualSectionProps = {
+  first?: boolean;
   priority?: boolean;
   work: ContentEntry;
 };
@@ -37,6 +38,7 @@ function buildMediaStyle(work: ContentEntry) {
 }
 
 export function WorkVisualSection({
+  first = false,
   priority = false,
   work,
 }: WorkVisualSectionProps) {
@@ -46,7 +48,7 @@ export function WorkVisualSection({
   const visualVideo = getFrontmatterText(work.frontmatter, "visualVideo");
 
   return (
-    <section className="border-t border-[var(--divider)]">
+    <section className={first ? "" : "border-t border-[var(--divider)]"}>
       <article className="relative isolate min-h-[88svh] overflow-hidden">
         <div
           aria-hidden="true"
@@ -66,7 +68,11 @@ export function WorkVisualSection({
           </div>
         ) : null}
 
-        <div className="relative z-10 mx-auto flex min-h-[88svh] max-w-7xl items-end px-6 py-10 sm:px-8 lg:px-10">
+        <div
+          className={`relative z-10 mx-auto flex min-h-[88svh] max-w-7xl items-end px-6 py-10 sm:px-8 lg:px-10 ${
+            first ? "pt-32 sm:pt-36" : ""
+          }`}
+        >
           <div className="max-w-xl">
             <p className="text-[11px] uppercase tracking-[0.28em] text-[var(--accent-soft)]">
               {status} / {year}
