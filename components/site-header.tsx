@@ -1,22 +1,21 @@
+import Link from "next/link";
+
 import { SocialLinks } from "@/components/social-links";
 
 export function SiteHeader() {
   return (
     <header className="flex flex-wrap items-center justify-between gap-4 border-b border-[var(--border)] pb-5">
       <div className="flex items-center gap-6">
-        <a className="text-sm font-medium uppercase tracking-[0.28em] text-[var(--foreground)]" href="/">
+        <Link className="text-sm font-medium uppercase tracking-[0.28em] text-[var(--foreground)]" href="/">
           Planet2x
-        </a>
+        </Link>
         <nav className="hidden items-center gap-5 text-sm text-[var(--soft-foreground)] sm:flex">
-          <a className="transition hover:text-[var(--foreground)]" href="#featured">
-            Featured
-          </a>
-          <a className="transition hover:text-[var(--foreground)]" href="#work">
+          <Link className="transition hover:text-[var(--foreground)]" href="/">
             Work
-          </a>
-          <a className="transition hover:text-[var(--foreground)]" href="#newsletter">
-            Updates
-          </a>
+          </Link>
+          <Link className="transition hover:text-[var(--foreground)]" href="/privacy">
+            Privacy
+          </Link>
         </nav>
       </div>
 

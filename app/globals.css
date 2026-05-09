@@ -9,6 +9,7 @@
   --accent-soft: #8de9ff;
   --border: rgba(255, 255, 255, 0.1);
   --border-strong: rgba(255, 255, 255, 0.22);
+  --divider: rgba(255, 255, 255, 0.08);
   --panel: rgba(255, 255, 255, 0.035);
   --panel-strong: rgba(10, 13, 20, 0.82);
 }

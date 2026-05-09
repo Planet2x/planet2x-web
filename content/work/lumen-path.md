@@ -8,6 +8,11 @@ video: ""
 appStoreUrl: ""
 status: "In development"
 year: "2026"
+homepageLine: "A luminous atmospheric project guiding the next Planet2x identity."
+visualVideo: "/media/work/lumen-path/lumen-path-hero.mp4"
+visualImage: "/media/work/lumen-path/lumen-path-hero.jpg"
+visualTintA: "#7bf4ff"
+visualTintB: "#7d5dff"
 tags:
   - atmosphere
   - storytelling

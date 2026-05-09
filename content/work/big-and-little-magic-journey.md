@@ -8,6 +8,11 @@ video: ""
 appStoreUrl: ""
 status: "Released"
 year: "2025"
+homepageLine: "A softer adventure shaped around wonder, calm, and play."
+visualVideo: "/media/work/big-and-little-magic-journey/big-and-little-hero.mp4"
+visualImage: "/media/work/big-and-little-magic-journey/big-and-little-hero.jpg"
+visualTintA: "#f7d59c"
+visualTintB: "#ff8b6b"
 tags:
   - ios
   - adventure

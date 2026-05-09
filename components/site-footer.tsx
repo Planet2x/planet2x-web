@@ -7,9 +7,6 @@ export function SiteFooter({ children }: { children?: ReactNode }) {
         <p className="text-sm text-[var(--soft-foreground)]">
           Planet2x Creative Studio
         </p>
-        <p className="mt-2 text-sm text-[var(--muted)]">
-          Parallel Vercel rebuild. Framer remains the live site for now.
-        </p>
       </div>
       {children}
     </footer>

@@ -18,6 +18,11 @@ export async function getPageBySlug(slug: string): Promise<ContentEntry> {
   return normalizeEntry(entry);
 }
 
+export async function getWorkBySlug(slug: string): Promise<ContentEntry> {
+  const entry = await readMarkdownEntry(path.join(CONTENT_ROOT, "work", `${slug}.md`));
+  return normalizeEntry(entry);
+}
+
 export async function getWorkEntries(): Promise<ContentEntry[]> {
   const directory = path.join(CONTENT_ROOT, "work");
   const fileNames = (await readdir(directory)).filter((name) => name.endsWith(".md"));
@@ -34,6 +39,12 @@ export async function getWorkEntries(): Promise<ContentEntry[]> {
       getFrontmatterText(left.frontmatter, "date"),
     ),
   );
+}
+
+export async function getWorkSlugs(): Promise<string[]> {
+  const directory = path.join(CONTENT_ROOT, "work");
+  const fileNames = (await readdir(directory)).filter((name) => name.endsWith(".md"));
+  return fileNames.map((fileName) => fileName.replace(/\.md$/, ""));
 }
 
 export function getFrontmatterText(frontmatter: FrontmatterMap, key: string): string {

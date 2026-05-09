@@ -8,6 +8,11 @@ video: ""
 appStoreUrl: ""
 status: "Released"
 year: "2025"
+homepageLine: "Stylized motion, mood, and music-driven play in a compact world."
+visualVideo: "/media/work/liquid-path/liquid-path-hero.mp4"
+visualImage: "/media/work/liquid-path/liquid-path-hero.jpg"
+visualTintA: "#65f0ff"
+visualTintB: "#4f9bff"
 tags:
   - ios
   - music-driven

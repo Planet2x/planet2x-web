@@ -24,6 +24,7 @@ node_modules/
 out/
 *.json
 !package-lock.json
+!tsconfig.typecheck.json
 GoogleService-Info.plist
 google-services.json
 .env
