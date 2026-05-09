@@ -1,15 +1,24 @@
 # Architecture
 
-Status: `DORMANT / PARKED`
+Status: `ACTIVE 0.x PUBLIC REBUILD`
 
-This repo is not part of the current active cockpit runtime path.
+This repository currently carries two layers:
 
-Active runtime path:
+- the new public-facing Next.js site being rebuilt in parallel with the live Framer site
+- dormant but preserved cockpit/backend groundwork under `app/api/cockpit/*` and `lib/cockpit/*`
 
-- `planet2x-cloud-worker -> GCS snapshots -> cockpit clients`
+Current public-site boundaries:
 
-Keep this repo as a future authenticated gateway option if private access is
-needed later.
+- Framer remains live at `https://planet2x.com`
+- this Vercel/Next.js version is a safe parallel rebuild
+- no domain switch yet
+- no CMS, auth, database, or Cockpit API integration in the public site layer yet
+
+Future flexibility:
+
+- keep the public site file-based and easy to evolve in small patches
+- leave room for future protected route areas such as `/studio`, `/cockpit`, and `/admin`
+- preserve existing cockpit code and document its role instead of deleting it blindly
 
 Use this space for the site-level technical picture:
 
@@ -21,3 +30,9 @@ Use this space for the site-level technical picture:
 
 Keep the notes practical. Capture why the system is shaped the way it is, not
 just what folders exist.
+
+Current route stance:
+
+- `app/(public)/` is the active public-site surface
+- `app/api/cockpit/*` remains preserved backend groundwork
+- future authenticated areas should be added as explicit sibling routes rather than being mixed into the public site

@@ -1,13 +1,17 @@
 ---
 title: "About"
 slug: "about"
-date: "2026-03-22"
-excerpt: "Starter page content for a general-purpose site page."
-coverImage: "/images/pages/about-cover.jpg"
+date: "2026-05-09"
+excerpt: "A short studio note for the public site."
+coverImage: "/images/pages/about-still.jpg"
 tags:
-  - company
+  - studio
+  - note
 ---
 
-This is a generic page entry for content that does not fit a work or fragment
-pattern. The format is intentionally simple until real needs push it further.
+Planet2x is a small creative studio crafting emotional, atmospheric adventures
+with a focus on atmosphere, storytelling, and expressive sound.
 
+The public site should feel calm, luminous, and intentional. It is a home for
+selected work, occasional updates, and a studio voice that stays close to the
+making.

@@ -1,24 +1,16 @@
 @import "tailwindcss";
 
 :root {
-  color-scheme: dark light;
-  --background: #09090b;
-  --foreground: #f4f4f5;
-  --soft-foreground: #b4b4bc;
-  --muted: #7a7a84;
-  --border: rgba(255, 255, 255, 0.12);
-  --panel: rgba(255, 255, 255, 0.04);
-}
-
-@media (prefers-color-scheme: light) {
-  :root {
-    --background: #f7f6f2;
-    --foreground: #171717;
-    --soft-foreground: #4f4f57;
-    --muted: #74747d;
-    --border: rgba(23, 23, 23, 0.1);
-    --panel: rgba(23, 23, 23, 0.035);
-  }
+  color-scheme: dark;
+  --background: #06070a;
+  --foreground: #f5f7fb;
+  --soft-foreground: #a4aab8;
+  --muted: #6d7483;
+  --accent-soft: #8de9ff;
+  --border: rgba(255, 255, 255, 0.1);
+  --border-strong: rgba(255, 255, 255, 0.22);
+  --panel: rgba(255, 255, 255, 0.035);
+  --panel-strong: rgba(10, 13, 20, 0.82);
 }
 
 * {
@@ -33,13 +25,11 @@ body {
   margin: 0;
   min-width: 320px;
   background:
-    radial-gradient(circle at top, rgba(94, 234, 212, 0.08), transparent 28%),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.02), transparent 24%),
+    radial-gradient(circle at top, rgba(119, 241, 255, 0.09), transparent 30%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.015), transparent 24%),
     var(--background);
   color: var(--foreground);
-  font-family:
-    "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Palatino, Georgia,
-    serif;
+  font-family: var(--font-sans), system-ui, sans-serif;
   text-rendering: optimizeLegibility;
 }
 
@@ -49,6 +39,14 @@ a {
 }
 
 ::selection {
-  background: rgba(94, 234, 212, 0.2);
+  background: rgba(119, 241, 255, 0.24);
 }
 
+input,
+button {
+  font: inherit;
+}
+
+.text-balance {
+  text-wrap: balance;
+}
