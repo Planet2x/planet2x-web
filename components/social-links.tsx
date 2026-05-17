@@ -1,8 +1,18 @@
+import type { ReactNode } from "react";
+
 type SocialLinksProps = {
+  className?: string;
   compact?: boolean;
+  itemClassName?: string;
 };
 
-const links = [
+type SocialLink = {
+  href: string;
+  icon: ReactNode;
+  label: string;
+};
+
+const links: SocialLink[] = [
   {
     href: "https://www.instagram.com/",
     label: "Instagram",
@@ -45,16 +55,20 @@ const links = [
   },
 ];
 
-export function SocialLinks({ compact = false }: SocialLinksProps) {
+export function SocialLinks({
+  className = "",
+  compact = false,
+  itemClassName = "",
+}: SocialLinksProps) {
   return (
-    <div className="flex items-center gap-2">
+    <div className={`flex items-center gap-2 ${className}`.trim()}>
       {links.map((link) => (
         <a
           key={link.label}
           aria-label={link.label}
           className={`inline-flex items-center justify-center rounded-full border border-[var(--border)] text-[var(--soft-foreground)] transition hover:border-[var(--border-strong)] hover:text-[var(--foreground)] ${
             compact ? "h-10 w-10" : "h-11 w-11"
-          }`}
+          } ${itemClassName}`.trim()}
           href={link.href}
           rel="noreferrer"
           target="_blank"

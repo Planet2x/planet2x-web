@@ -46,6 +46,7 @@ export function WorkVisualSection({
   const status = getFrontmatterText(work.frontmatter, "status");
   const year = getFrontmatterText(work.frontmatter, "year");
   const visualVideo = getFrontmatterText(work.frontmatter, "visualVideo");
+  const showDebugMediaLabel = process.env.NODE_ENV !== "production";
 
   return (
     <section className={first ? "" : "border-t border-[var(--divider)]"}>
@@ -56,16 +57,16 @@ export function WorkVisualSection({
           style={buildMediaStyle(work)}
         />
 
-        {visualVideo ? (
-          <div className="absolute left-6 top-6 z-10 rounded-full border border-[var(--border)] bg-[rgba(5,7,10,0.55)] px-3 py-1 text-[11px] uppercase tracking-[0.22em] text-[var(--soft-foreground)]">
-            Future video: {visualVideo}
-          </div>
-        ) : null}
-
-        {!visualVideo ? (
-          <div className="absolute left-6 top-6 z-10 rounded-full border border-[var(--border)] bg-[rgba(5,7,10,0.55)] px-3 py-1 text-[11px] uppercase tracking-[0.22em] text-[var(--soft-foreground)]">
-            Placeholder visual
-          </div>
+        {showDebugMediaLabel ? (
+          visualVideo ? (
+            <div className="absolute left-6 top-6 z-10 hidden rounded-full border border-[var(--border)] bg-[rgba(5,7,10,0.55)] px-3 py-1 text-[11px] uppercase tracking-[0.22em] text-[var(--soft-foreground)] sm:block">
+              Future video: {visualVideo}
+            </div>
+          ) : (
+            <div className="absolute left-6 top-6 z-10 hidden rounded-full border border-[var(--border)] bg-[rgba(5,7,10,0.55)] px-3 py-1 text-[11px] uppercase tracking-[0.22em] text-[var(--soft-foreground)] sm:block">
+              Placeholder visual
+            </div>
+          )
         ) : null}
 
         <div
